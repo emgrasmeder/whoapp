@@ -16,21 +16,26 @@ class Analyzer():
         print("Instantiating Analyzer class")
 
         self.cast = []
-        self.sentences = nltk.Text(
-                    nltk.sent_tokenize(
-                    open('../resources/raw-scripts/34_1__Deep_Breath.txt',"r").read()))
+        
+        sent_tokens = nltk.sent_tokenize(
+                    open('../resources/raw-scripts/34_1__Deep_Breath.txt',"r").read())
+
+        [print(sc) for sc in sent_tokens if re.findall(r"(?=\[)(?=.*\].*\n)",sc)]
+        
+        self.sentences = nltk.Text(sent_tokens)
 
     def isolate_speaker(self):
         pass
 
-    def isolate_stage_commands(self):
+    def isolate_stage_directions(self):
         '''
-            First blush of filtering out parenthetical data about what
-            characters are doing. Problematically, this still filters out:
-            'DOCTOR: (to dinosaur) I'm not flirting, by the way.'
+            Should remove all lines that start with and end with a parenthesis
+            or bracket. Doesn't have anything to do with:
+            [scene note]\nDOCTOR: Clara! 
+            because those are in the same sentence token.
         '''
-        stage_commands = [s 
+        stage_directions = [s 
             for s in self.sentences 
                 if re.findall(r"(?=^\()(?=.*\)$)|(?=^\[)(?=.*\]$)",s)]
-        [print(sc+"---\n---") for sc in stage_commands]
+        [print(sc+"---\n---") for sc in stage_directions]
         
