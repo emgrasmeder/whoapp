@@ -31,9 +31,6 @@ class Analyzer():
         '''
         stage_commands = [s 
             for s in self.sentences 
-                if re.findall(r"(?=\()(?=.*\))|(?=\[)(?=.*\])",s) and not
-                    re.findall(r"^[A-Z]",s)]
-                #if re.findall(r"(?=\()(?=.*\))|(?=\[)(?=.*\])",s) and not
-                #re.findall(r"(?=^[A-Z]\: \()",s)]
-        [print(sc+"\n") for sc in stage_commands]
+                if re.findall(r"(?=^\()(?=.*\)$)|(?=^\[)(?=.*\]$)",s)]
+        [print(sc+"---\n---") for sc in stage_commands]
         
