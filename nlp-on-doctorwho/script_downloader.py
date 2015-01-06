@@ -12,18 +12,3 @@
     will work with python3
 '''
 
-
-import urllib3
-import time
-
-url = 'http://www.chakoteya.net/doctorwho/34-1.html'
-
-http = urllib3.PoolManager()
-testr = http.request('GET', 'http://www.chakoteya.net/doctorwho/34-1.html')
-print("accomplished step 1")
-
-
-
-#response = urllib3.request.urlopen(url)
-#raw = response.read().decode('utf8')
-#print("raw = %s" % raw[:75])
