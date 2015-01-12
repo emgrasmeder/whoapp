@@ -1,8 +1,9 @@
-import script_parser
+from line_packager import *
 
 if __name__ == "__main__":
-    script = script_parser.Analyzer()
-    script.isolate_stage_directions()
-    raw_input("isolated stage directions")
-    script.isolate_scene_notes()
-    script.isolate_speaker()
+    obj = LinePackager()
+    obj.parseline("test string 1")
+
+
+#with open("script_database.csv", "a") as output_file:
+#    output_file.write("\n"+"\t".join(input_file))jkhjk

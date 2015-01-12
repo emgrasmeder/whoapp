@@ -40,9 +40,6 @@ class Analyzer():
         
         ''' The code just below turns EVERYTHING into a list, which I dont
         love '''
-        #trickylines = map(lambda line: 
-        #    self.isolate_stage_directions(sentences=line.split("\n")),
-        #    trickylines)
         
         #[print(st) for st in self.trickylines]
         
@@ -66,7 +63,7 @@ class Analyzer():
                                             self.sent_tokens)
         #nltk.sent_tokenize(self.spoken_lines)
         fdist1 = nltk.FreqDist(["to do or not to do"])
-        print(list(fdist1["to"]))
+
 
 
         #[print("---"+s+"---\n") for s in spoken_lines]
