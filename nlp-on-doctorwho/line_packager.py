@@ -27,7 +27,8 @@ class LinePackager:
             Redundancy can be an auto test?
         '''
         self.script_segment = script_segment.strip('\n')
-        output = {"message_type":self.get_message_type(),
+        self.parse_message()
+        output = {"message_type":self.message_type,
                     "content":"self.get_content()",
                     "speaker":"self.get_speaker()",
                     "speaker_subcategory":"self.get_speaker_subcategory()",
@@ -67,7 +68,7 @@ class LinePackager:
         else:
             self.commit_output(output=[3,script_segment.strip('\n')])
 
-    def get_message_type(self):
+    def parse_message(self):
         '''
             Returns the message type, probably coded?
 
@@ -84,32 +85,41 @@ class LinePackager:
             Coming through. That's it. Excuse me, sir. \n"
             >"VASTRA: (To Dinosaur) I was there.\n"
         '''
-        def detect_date(line):
-            try:
-                return(datetime.datetime.strptime(line.split(":")[1].strip('\n'),' %d %b %Y'))
-            except: return(False)
 
         print("\n\n---getting message type---\n\n\n---%s---\n\n" % 
             self.script_segment)
         if self.script_segment in ["","\n"]:
-            print("the line is EMPTY: %s" % self.script_segment)
+            print("the line is EMPTY")
+            return(False)
         elif not any(x in [":","[","]","(",")"] for x in self.script_segment):
+            self.message_type = "title"
             print("the line is the TITLE: %s" % self.script_segment)
-        elif detect_date(self.script_segment):
+        elif self.detect_date():
             print("the line is the DATE: %s" % self.script_segment)
+            self.message_type = "date"
         elif self.script_segment[0] == "[" and self.script_segment[-1]=="]":
+            self.message_type = "scene_location"
             print("the line is the LOCATION(stagedir): %s" 
                                                         % self.script_segment)
         elif self.script_segment[0] == "(": # and self.script_segment[-1]==")":
+            self.message_type = "scene_description"
             print("the line is the STAGE_DIRECTION: %s" 
                                                         % self.script_segment)
         elif ":" in self.script_segment.split(" ")[0]:
+            self.message_type = "spoken_line"
             if self.script_segment[1][0] == "(" and \
                                             self.script_segment[1][-1] ==")":
                 print("the line is LINE with STAGE_DIR: %s" 
                                                     % self.script_segment)
             else:
                 print("This is a SPOKEN LINE: %s " % self.script_segment)
+
+    def detect_date(self):
+        try:
+            return(datetime.datetime.strptime(\
+                self.script_segment.split(":")[1].strip('\n'),' %d %b %Y'))
+        except:
+            return(False)
 
 
 ###
