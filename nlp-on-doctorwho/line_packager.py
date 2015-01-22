@@ -1,4 +1,5 @@
 from __future__ import print_function
+import datetime
 '''
     The LinePackager class takes as input a single line of a Doctor Who 
     script and converts it to a simple record for the database to compute
@@ -25,14 +26,17 @@ class LinePackager:
             line in the script? For now, that makes sense to me to do. 
             Redundancy can be an auto test?
         '''
-        if script_segment:
-            is_empty = self.check_is_empty(script_segment)
-            if not is_empty:
-                is_title = self.check_is_title(script_segment)
-            #is_dialog = check_is_dialog()
-            print("the script_segment you gave me was: '%s'" % script_segment)
-        else:
-            raw_input("Must provide a script_segment to parse.")
+        self.script_segment = script_segment.strip('\n')
+        output = {"message_type":self.get_message_type(),
+                    "content":"self.get_content()",
+                    "speaker":"self.get_speaker()",
+                    "speaker_subcategory":"self.get_speaker_subcategory()",
+                    "writer":"self.get_writer()",
+                    "year":"self.get_year()",
+                    "episode_number":"self.get_episode_number()"}
+        raw_input()
+        #self.commit_output(output)
+        
 
     def commit_output(self, output=False):
         if output:
@@ -51,29 +55,61 @@ class LinePackager:
                 self.commit_output()
                 return True
 
-    def check_is_title(self, script_segment):
+    def check_is_stage_direction(self, script_segment):
         '''
             Simplest algorithm that will return True in the naivest of 
             elegance, check if it has (,),[,or  in it. 
             Additional tests to implement in the future:
-            - Is the line reasonably similar to a title in a list of titles?
-            - Is the line reasonably similar to a title in a season-sepcific
-                list of titles?
-            - Does the line contain "Air*Date" or have something in a date 
-                format?
         '''
         flags = ["(",")","[","]"]
         if any(x in flags for x in script_segment):
-            print("Parenthetical string found?")
+            print("Parenthetical string found?, may be stage direction")
         else:
             self.commit_output(output=[3,script_segment.strip('\n')])
 
-    def is_dialog(self, script_segment):
+    def get_message_type(self):
         '''
-            Check if the line follows the pattern:
-            r'^[A-Z].*:" "... or whatever
+            Returns the message type, probably coded?
+
+            Possible messages:
+            >"\n"
+            >"Deep Breath\n"
+            >"Original Airdate: 23 Aug 2014\n"
+            >"[Albert Embankment]\n"
+            >"(On the south side of the River Thames in London, \
+                across from Thorney Island and the Houses of Parliament, \
+                a crowd is gathered as Big Ben chimes three o'clock and a \
+                dinosaur roars at it.) \n"
+            >"POLICEMAN: Come on, out of the way. Move yourself, please. \
+            Coming through. That's it. Excuse me, sir. \n"
+            >"VASTRA: (To Dinosaur) I was there.\n"
         '''
-        pass
+        def detect_date(line):
+            try:
+                return(datetime.datetime.strptime(line.split(":")[1].strip('\n'),' %d %b %Y'))
+            except: return(False)
+
+        print("\n\n---getting message type---\n\n\n---%s---\n\n" % 
+            self.script_segment)
+        if self.script_segment in ["","\n"]:
+            print("the line is EMPTY: %s" % self.script_segment)
+        elif not any(x in [":","[","]","(",")"] for x in self.script_segment):
+            print("the line is the TITLE: %s" % self.script_segment)
+        elif detect_date(self.script_segment):
+            print("the line is the DATE: %s" % self.script_segment)
+        elif self.script_segment[0] == "[" and self.script_segment[-1]=="]":
+            print("the line is the LOCATION(stagedir): %s" 
+                                                        % self.script_segment)
+        elif self.script_segment[0] == "(": # and self.script_segment[-1]==")":
+            print("the line is the STAGE_DIRECTION: %s" 
+                                                        % self.script_segment)
+        elif ":" in self.script_segment.split(" ")[0]:
+            if self.script_segment[1][0] == "(" and \
+                                            self.script_segment[1][-1] ==")":
+                print("the line is LINE with STAGE_DIR: %s" 
+                                                    % self.script_segment)
+            else:
+                print("This is a SPOKEN LINE: %s " % self.script_segment)
 
 
 ###
